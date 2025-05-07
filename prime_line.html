@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<!--
+Created using JS Bin
+http://jsbin.com
+
+Copyright (c) 2025 by anonymous (http://jsbin.com/qerolixoja/1/edit)
+
+Released under the MIT license: http://jsbin.mit-license.org
+-->
+<head>
+  <meta name="robots" content="noindex">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>JS Bin</title>
+</head>
+<body>
+
+<script id="jsbin-javascript">
+const canvasSize = 5000;
+const gridSize = 2;
+const canvas = document.createElement("canvas");
+canvas.width = canvasSize;
+canvas.height = canvasSize;
+document.body.appendChild(canvas);
+const ctx = canvas.getContext("2d");
+
+let x = canvasSize / 2;
+let y = canvasSize / 2;
+let direction = 0; // 0: 上, 1: 右, 2: 下, 3: 左
+const visited = new Map();
+
+function isPrime(n) {
+    if (n < 2) return false;
+    for (let i = 2; i * i <= n; i++) {
+        if (n % i === 0) return false;
+    }
+    return true;
+}
+
+function drawStep(n) {
+    const key = `${x},${y}`;
+    const isPrimeNumber = isPrime(n);
+
+    // 赤（素数）で塗るべき場合は、必ず赤で塗る
+    if (!visited.has(key) || isPrimeNumber) {
+        ctx.fillStyle = isPrimeNumber ? "red" : "black";
+        ctx.fillRect(x, y, gridSize, gridSize);
+        visited.set(key, isPrimeNumber);
+    }
+
+    // 素数なら右に曲がる（＝次の進行方向のマスは赤で塗るべき）
+    if (isPrimeNumber) {
+        direction = (direction + 1) % 4;
+    }
+
+    // 次の座標へ移動
+    switch (direction) {
+        case 0: y -= gridSize; break;
+        case 1: x += gridSize; break;
+        case 2: y += gridSize; break;
+        case 3: x -= gridSize; break;
+    }
+}
+
+function start() {
+    let n = 1;
+    const interval = setInterval(() => {
+        drawStep(n);
+        n++;
+        if (x < 0 || x >= canvasSize || y < 0 || y >= canvasSize) {
+            clearInterval(interval);
+        }
+    }, 10);
+}
+
+start();
+</script>
+</body>
+</html>
